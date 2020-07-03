@@ -1,0 +1,86 @@
+<html>
+
+<head>
+    <title>TensorFlowJs Project</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <style>
+        .container {
+            padding-top: 20px;
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <strong>TensorFlow.js Project - Linear Regression</strong>
+            </div>
+            <div class="card-body">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Log Output:</h5>
+                        <div id="log"></div>
+
+                    </div>
+                    <label>Input Value:</label>
+                    <input type="text" id="inputValue" class="form-control"><br>
+                    <button type="button" class="btn btn-primary" id="predictButton" disabled>Model is being trained,
+                        please wait ...</button><br><br>
+                    <h4>Result: </h4>
+                    <h5><span class="badge badge-secondary" id="output"></span></h5>
+                </div>
+            </div>
+        </div>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+        <script>
+            function createLogEntry(entry) {
+                document.querySelector("#log").innerHTML += '<br>' + entry;
+            }
+
+            createLogEntry("Create model ....");
+            const model = tf.sequential();
+            createLogEntry("Model Created");
+            model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
+            createLogEntry("Layers Created");
+            createLogEntry("Start Compiling ...");
+            model.compile({
+                loss: 'meanSquaredError',
+                optimizer: 'sgd'
+            });
+            createLogEntry("Compiled");
+
+            createLogEntry("Start training ...");
+
+            const xs = tf.tensor2d([-1, 0, 1, 2, 3, 4], [6, 1]);
+            const ys = tf.tensor2d([-3, -1, 1, 3, 5, 7], [6, 1]);
+
+
+            model.fit(xs, ys, { epochs: 500 }).then(() => {
+                document.getElementById('predictButton').disabled = false;
+                document.getElementById('predictButton').innerText = "Predict";
+                createLogEntry("Training Completed");
+
+            })
+
+
+
+            document.getElementById('predictButton').addEventListener('click', function () {
+                var inputVal = Number(document.getElementById('inputValue').value);
+                let prediction = model.predict(tf.tensor2d([inputVal], [1, 1]));
+                document.querySelector('#output').innerText = prediction;
+
+
+            })
+        </script>
+</body>
+
+</html>
